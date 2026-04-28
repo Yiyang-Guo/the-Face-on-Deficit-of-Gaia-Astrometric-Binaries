@@ -1,0 +1,38 @@
+# Face-on Gaia 1988 Demo
+
+Standalone demo for Gaia DR3 `source_id=1988288559178163840`.
+
+The script compares four inclination reconstructions from one Gaia NSS/TI CSV row:
+
+- diagonal ABFG Monte Carlo
+- full-covariance ABFG Monte Carlo
+- original U-space posterior
+- rotated U-space posterior
+
+The U-space part is implemented explicitly in the script:
+
+- `build_uniform_sphere_proposal` constructs the proposal grid for the unit angular-momentum direction.
+- `build_tau_proposal` constructs the nuisance in-plane angle grid.
+- `abfg_template_from_n_tau` maps each `(n, tau)` proposal to a unit-amplitude ABFG template.
+- `sphere_posterior_abfg` evaluates the ABFG likelihood, profiles out the amplitude, and marginalizes over `tau`.
+- `build_u_space_from_angular_momentum` folds the angular-momentum directions into `U=(sin i cos 2Omega, sin i sin 2Omega, cos i)`.
+- `rotate_cloud` applies the face-on rotation used by the rotated U-space estimator.
+
+Example:
+
+```bash
+python faceon_1988288559178163840_demo.py
+```
+
+The included `gaia_1988288559178163840_twobody_row.csv` is a one-row extract
+from the Gaia NSS/TI table. For other targets, the input CSV should contain the
+same Gaia NSS columns, including `a_thiele_innes`, `b_thiele_innes`,
+`f_thiele_innes`, `g_thiele_innes`, their errors, and `corr_vec`.
+
+Outputs:
+
+- `method_summary.csv`
+- `posterior_density_curves.csv`
+- `uspace_proposal_and_rotation.csv`
+- `1988_four_methods_i_cosi.png`
+- `1988_original_vs_rotated_uspace.png`
